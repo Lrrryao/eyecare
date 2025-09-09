@@ -21,7 +21,7 @@ class DemoWin(QMainWindow):
         # 为窗口设置一个对象名，方便使用QSS设置样式
         self.setObjectName("MainWindow")
         # 设置QSS样式
-        self.setStyleSheet("#MainWindow{border-image:url('D:/Eyecare/drink_water.jpg');}")
+        self.setStyleSheet("#MainWindow{border-image:url('drink_water.jpg');}")
 
         # 添加窗口标题
         self.setWindowTitle("窗口样式Demo")
