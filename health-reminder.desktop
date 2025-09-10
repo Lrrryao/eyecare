@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=健康提醒管理器
+Comment=健康提醒助手管理界面
+Exec=/home/lrrrryao/internship/backend/projects/eyecare/deploy/start_health_manager.sh
+Icon=/home/lrrrryao/internship/backend/projects/eyecare/drink.png
+Path=/home/lrrrryao/internship/backend/projects/eyecare
+Terminal=false
+StartupNotify=true
+Categories=Utility;Health;
+Keywords=health;reminder;eye;water;健康;提醒;

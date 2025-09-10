@@ -1,0 +1,22 @@
+[Unit]
+Description=健康提醒助手 (Eye Care Reminder)
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/lrrrryao/internship/backend/projects/eyecare
+ExecStart=/usr/bin/python3 /home/lrrrryao/internship/backend/projects/eyecare/simple_scheduler.py
+Restart=always
+RestartSec=10
+Environment=DISPLAY=:0
+Environment=XDG_SESSION_TYPE=wayland
+Environment=QT_QPA_PLATFORM=wayland
+
+# 日志设置
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
