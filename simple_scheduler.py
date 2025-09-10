@@ -14,6 +14,25 @@ from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QIcon
 
+def format_time_display(minutes):
+    """将小数分钟转换为分钟秒格式显示"""
+    if minutes <= 0:
+        return "0分钟"
+    
+    # 分离整数部分和小数部分
+    whole_minutes = int(minutes)
+    decimal_part = minutes - whole_minutes
+    
+    # 将小数部分转换为秒
+    seconds = int(decimal_part * 60)
+    
+    if whole_minutes > 0 and seconds > 0:
+        return f"{whole_minutes}分钟{seconds}秒"
+    elif whole_minutes > 0:
+        return f"{whole_minutes}分钟"
+    else:
+        return f"{seconds}秒"
+
 # 设置环境变量以支持系统托盘
 # 在Wayland环境下，尝试使用wayland平台，如果失败则回退到xcb
 if os.environ.get('XDG_SESSION_TYPE') == 'wayland':
@@ -291,10 +310,13 @@ class SimpleScheduler:
         next_eye = self.eye_timer.remainingTime() / 60000
         next_water = self.water_timer.remainingTime() / 60000
         
+        eye_time_str = format_time_display(next_eye)
+        water_time_str = format_time_display(next_water)
+        
         status_msg = f"""健康提醒助手状态
         
-眼睛休息提醒: {next_eye:.1f}分钟后 (间隔: {self.eye_interval}分钟)
-喝水提醒: {next_water:.1f}分钟后 (间隔: {self.water_interval}分钟)
+眼睛休息提醒: {eye_time_str}后 (间隔: {self.eye_interval}分钟)
+喝水提醒: {water_time_str}后 (间隔: {self.water_interval}分钟)
 
 运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         

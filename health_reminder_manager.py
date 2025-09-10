@@ -17,6 +17,25 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt5.QtCore import Qt, QTimer, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
 
+def format_time_display(minutes):
+    """将小数分钟转换为分钟秒格式显示"""
+    if minutes <= 0:
+        return "0分钟"
+    
+    # 分离整数部分和小数部分
+    whole_minutes = int(minutes)
+    decimal_part = minutes - whole_minutes
+    
+    # 将小数部分转换为秒
+    seconds = int(decimal_part * 60)
+    
+    if whole_minutes > 0 and seconds > 0:
+        return f"{whole_minutes}分钟{seconds}秒"
+    elif whole_minutes > 0:
+        return f"{whole_minutes}分钟"
+    else:
+        return f"{seconds}秒"
+
 # 设置环境变量
 os.environ['QT_QPA_PLATFORM'] = 'wayland' if os.environ.get('XDG_SESSION_TYPE') == 'wayland' else 'xcb'
 
@@ -298,12 +317,12 @@ class HealthReminderManager(QMainWindow):
                     
                     if next_eye > 0 and next_water > 0:
                         # 显示两个提醒的剩余时间
-                        display_text = f"下次提醒: 眼睛休息({next_eye:.1f}分钟) | 喝水({next_water:.1f}分钟)"
+                        eye_time_str = format_time_display(next_eye)
+                        water_time_str = format_time_display(next_water)
+                        display_text = f"下次提醒: 眼睛休息({eye_time_str}) | 喝水({water_time_str})"
                         self.next_reminder_label.setText(display_text)
-                        self.log_message(f"状态更新: {display_text}")
                     else:
                         self.next_reminder_label.setText("下次提醒: 计算中...")
-                        self.log_message(f"状态数据: 眼睛={next_eye}, 喝水={next_water}")
                 else:
                     self.next_reminder_label.setText("下次提醒: 状态文件不存在")
             else:

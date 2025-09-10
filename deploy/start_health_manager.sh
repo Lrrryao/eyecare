@@ -3,8 +3,8 @@
 
 echo "启动健康提醒管理器..."
 
-# 切换到脚本目录
-cd "$(dirname "$0")"
+# 切换到项目根目录
+cd "$(dirname "$0")/.."
 
 # 检查Python3是否可用
 if ! command -v python3 &> /dev/null; then

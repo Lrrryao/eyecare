@@ -1,6 +1,6 @@
 {
-  "eye_interval": 20,
-  "water_interval": 40,
+  "eye_interval": 40,
+  "water_interval": 30,
   "startup_message": true,
   "display_time": 5
 }

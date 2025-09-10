@@ -40,7 +40,7 @@ if command -v update-desktop-database &> /dev/null; then
 fi
 
 # 检查图标文件
-ICON_FILE="$SCRIPT_DIR/drink.png"
+ICON_FILE="$SCRIPT_DIR/../drink.png"
 if [ -f "$ICON_FILE" ]; then
     echo "图标文件存在: $ICON_FILE"
 else
