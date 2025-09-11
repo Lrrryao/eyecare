@@ -1,0 +1,43 @@
+# Python缓存文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 构建文件
+build/
+dist/
+*.spec
+
+# 可执行文件
+*.exe
+
+# 临时文件
+*.tmp
+*.temp
+*.log
+
+# IDE文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 项目特定的忽略文件
+# 保留源代码，但忽略构建产物
+eye/build/
+eye/dist/
+build/drink_water/
+dist/drink_water/
+
+# 图片文件（如果不想提交）
+# *.jpg
+# *.png
+# *.jpeg
+
+# 用户设置（可选，如果不想提交个人设置）
+# user_settings.json
