@@ -14,15 +14,17 @@ from PyQt5.QtGui import QFont, QIcon
 
 class SettingsWindow(QDialog):
     # 定义信号，用于通知主程序设置已更改
-    settings_changed = pyqtSignal(int, int, int, bool)
+    settings_changed = pyqtSignal(int, int, int, bool, int)
     
     def __init__(self, current_eye_interval=40, current_water_interval=30, 
-                 current_display_time=5, current_startup_msg=True, parent=None):
+                 current_display_time=5, current_startup_msg=True, 
+                 current_posture_interval=60, parent=None):
         super().__init__(parent)
         self.current_eye_interval = current_eye_interval
         self.current_water_interval = current_water_interval
         self.current_display_time = current_display_time
         self.current_startup_msg = current_startup_msg
+        self.current_posture_interval = current_posture_interval
         
         self.init_ui()
         self.setWindowFlags(self.windowFlags() | Qt.Tool | Qt.FramelessWindowHint)
@@ -108,6 +110,13 @@ class SettingsWindow(QDialog):
         self.water_spinbox.setSuffix(" 分钟")
         time_layout.addRow("喝水提醒间隔:", self.water_spinbox)
         
+        # 体态提醒间隔
+        self.posture_spinbox = QSpinBox()
+        self.posture_spinbox.setRange(1, 180)  # 1分钟到3小时
+        self.posture_spinbox.setValue(self.current_posture_interval)
+        self.posture_spinbox.setSuffix(" 分钟")
+        time_layout.addRow("体态提醒间隔:", self.posture_spinbox)
+        
         # 窗口显示时间
         self.display_spinbox = QSpinBox()
         self.display_spinbox.setRange(3, 30)  # 3秒到30秒
@@ -167,16 +176,17 @@ class SettingsWindow(QDialog):
         """应用设置"""
         eye_interval = self.eye_spinbox.value()
         water_interval = self.water_spinbox.value()
+        posture_interval = self.posture_spinbox.value()
         display_time = self.display_spinbox.value()
         startup_msg = self.startup_checkbox.isChecked()
         
         # 验证设置
-        if eye_interval < 1 or water_interval < 1:
+        if eye_interval < 1 or water_interval < 1 or posture_interval < 1:
             QMessageBox.warning(self, "设置错误", "提醒间隔不能少于1分钟！")
             return
         
         # 发送设置更改信号
-        self.settings_changed.emit(eye_interval, water_interval, display_time, startup_msg)
+        self.settings_changed.emit(eye_interval, water_interval, display_time, startup_msg, posture_interval)
         
         QMessageBox.information(self, "设置成功", "设置已应用！")
     

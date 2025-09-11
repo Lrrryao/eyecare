@@ -13,6 +13,7 @@ class SettingsManager:
         self.default_settings = {
             "eye_interval": 40,
             "water_interval": 30,
+            "posture_interval": 60,
             "display_time": 5,
             "startup_message": True
         }

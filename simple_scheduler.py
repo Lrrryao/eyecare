@@ -36,10 +36,11 @@ class SimpleScheduler:
         # 当前设置
         self.eye_interval = user_settings.get("eye_interval", 40)  # 分钟
         self.water_interval = user_settings.get("water_interval", 30)  # 分钟
+        self.posture_interval = user_settings.get("posture_interval", 60)  # 分钟
         
         # 设置系统托盘
         self.tray_icon = QSystemTrayIcon()
-        self.tray_icon.setIcon(QIcon("D:/Eyecare/Eyecare/drink.png"))
+        self.tray_icon.setIcon(QIcon("drink.png"))
         self.tray_icon.setToolTip("健康提醒助手")
         
         if not QSystemTrayIcon.isSystemTrayAvailable():
@@ -52,14 +53,17 @@ class SimpleScheduler:
         # 定时器设置
         self.eye_timer = QTimer()
         self.water_timer = QTimer()
+        self.posture_timer = QTimer()
         
         # 设置定时器间隔（毫秒）
         self.eye_interval_ms = self.eye_interval * 60 * 1000
         self.water_interval_ms = self.water_interval * 60 * 1000
+        self.posture_interval_ms = self.posture_interval * 60 * 1000
         
         # 连接定时器信号
         self.eye_timer.timeout.connect(self.show_eye_reminder)
         self.water_timer.timeout.connect(self.show_water_reminder)
+        self.posture_timer.timeout.connect(self.show_posture_reminder)
         
         # 启动定时器
         self.start_timers()
@@ -82,6 +86,10 @@ class SimpleScheduler:
         water_action = QAction("立即喝水提醒", self.app)
         water_action.triggered.connect(self.show_water_reminder)
         menu.addAction(water_action)
+        
+        posture_action = QAction("立即体态提醒", self.app)
+        posture_action.triggered.connect(self.show_posture_reminder)
+        menu.addAction(posture_action)
         
         menu.addSeparator()
         
@@ -108,14 +116,15 @@ class SimpleScheduler:
         """启动定时器"""
         self.eye_timer.start(self.eye_interval_ms)
         self.water_timer.start(self.water_interval_ms)
-        print(f"定时器已启动 - 眼睛休息: {self.eye_interval}分钟, 喝水提醒: {self.water_interval}分钟")
+        self.posture_timer.start(self.posture_interval_ms)
+        print(f"定时器已启动 - 眼睛休息: {self.eye_interval}分钟, 喝水提醒: {self.water_interval}分钟, 体态提醒: {self.posture_interval}分钟")
     
     def show_eye_reminder(self):
         """显示眼睛休息提醒 - 直接调用原始脚本"""
         try:
             print(f"[{datetime.now().strftime('%H:%M:%S')}] 显示眼睛休息提醒")
             # 直接调用原始的眼睛休息脚本
-            subprocess.Popen([sys.executable, "D:/Eyecare/Eyecare/eye/eyecare.py"])
+            subprocess.Popen([sys.executable, "eye/eyecare.py"])
         except Exception as e:
             print(f"显示眼睛提醒时出错: {e}")
     
@@ -124,28 +133,54 @@ class SimpleScheduler:
         try:
             print(f"[{datetime.now().strftime('%H:%M:%S')}] 显示喝水提醒")
             # 直接调用原始的喝水提醒脚本
-            subprocess.Popen([sys.executable, "D:/Eyecare/Eyecare/drink_water.py"])
+            subprocess.Popen([sys.executable, "drink_water.py"])
         except Exception as e:
             print(f"显示喝水提醒时出错: {e}")
+    
+    def show_posture_reminder(self):
+        """显示体态提醒 - 直接调用原始脚本"""
+        try:
+            print(f"[{datetime.now().strftime('%H:%M:%S')}] 显示体态提醒")
+            # 直接调用原始的体态提醒脚本
+            subprocess.Popen([sys.executable, "posture.py"])
+        except Exception as e:
+            print(f"显示体态提醒时出错: {e}")
     
     def show_startup_message(self):
         """显示启动消息"""
         self.tray_icon.showMessage(
             "健康提醒助手",
-            f"定时提醒已启动\n眼睛休息: {self.eye_interval}分钟\n喝水提醒: {self.water_interval}分钟",
+            f"定时提醒已启动\n眼睛休息: {self.eye_interval}分钟\n喝水提醒: {self.water_interval}分钟\n体态提醒: {self.posture_interval}分钟",
             QSystemTrayIcon.Information,
             3000
         )
+    
+    def format_remaining_time(self, minutes_float):
+        """格式化剩余时间显示"""
+        if minutes_float < 0:
+            return "即将提醒"
+        
+        minutes = int(minutes_float)
+        seconds = int((minutes_float - minutes) * 60)
+        
+        if minutes > 0 and seconds > 0:
+            return f"{minutes}分钟{seconds}秒"
+        elif minutes > 0:
+            return f"{minutes}分钟"
+        else:
+            return f"{seconds}秒"
     
     def show_status(self):
         """显示当前状态"""
         next_eye = self.eye_timer.remainingTime() / 60000
         next_water = self.water_timer.remainingTime() / 60000
+        next_posture = self.posture_timer.remainingTime() / 60000
         
         status_msg = f"""健康提醒助手状态
         
-眼睛休息提醒: {next_eye:.1f}分钟后 (间隔: {self.eye_interval}分钟)
-喝水提醒: {next_water:.1f}分钟后 (间隔: {self.water_interval}分钟)
+眼睛休息提醒: {self.format_remaining_time(next_eye)}后 (间隔: {self.eye_interval}分钟)
+喝水提醒: {self.format_remaining_time(next_water)}后 (间隔: {self.water_interval}分钟)
+体态提醒: {self.format_remaining_time(next_posture)}后 (间隔: {self.posture_interval}分钟)
 
 运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         
@@ -161,6 +196,7 @@ class SimpleScheduler:
                 self.water_interval,
                 5,  # 显示时间（这个版本不需要）
                 True,  # 启动消息
+                self.posture_interval,  # 体态提醒间隔
                 self.app.activeWindow()
             )
             settings_window.settings_changed.connect(self.update_settings)
@@ -169,22 +205,37 @@ class SimpleScheduler:
             print(f"显示设置窗口时出错: {e}")
             QMessageBox.critical(None, "错误", f"无法打开设置窗口: {e}")
     
-    def update_settings(self, eye_interval, water_interval, display_time, startup_msg):
+    def update_settings(self, eye_interval, water_interval, display_time, startup_msg, posture_interval=None):
         """更新设置"""
         try:
-            print(f"收到设置更新: 眼睛={eye_interval}分钟, 喝水={water_interval}分钟")
-            
-            # 更新当前设置
-            self.eye_interval = eye_interval
-            self.water_interval = water_interval
-            
-            # 保存设置到文件
-            settings = {
-                "eye_interval": eye_interval,
-                "water_interval": water_interval,
-                "display_time": display_time,
-                "startup_message": startup_msg
-            }
+            if posture_interval is not None:
+                print(f"收到设置更新: 眼睛={eye_interval}分钟, 喝水={water_interval}分钟, 体态={posture_interval}分钟")
+                # 更新当前设置
+                self.eye_interval = eye_interval
+                self.water_interval = water_interval
+                self.posture_interval = posture_interval
+                
+                # 保存设置到文件
+                settings = {
+                    "eye_interval": eye_interval,
+                    "water_interval": water_interval,
+                    "posture_interval": posture_interval,
+                    "display_time": display_time,
+                    "startup_message": startup_msg
+                }
+            else:
+                print(f"收到设置更新: 眼睛={eye_interval}分钟, 喝水={water_interval}分钟")
+                # 更新当前设置
+                self.eye_interval = eye_interval
+                self.water_interval = water_interval
+                
+                # 保存设置到文件
+                settings = {
+                    "eye_interval": eye_interval,
+                    "water_interval": water_interval,
+                    "display_time": display_time,
+                    "startup_message": startup_msg
+                }
             self.settings_manager.save_settings(settings)
             
             # 重新计算间隔
@@ -203,15 +254,31 @@ class SimpleScheduler:
             self.eye_timer.start(self.eye_interval_ms)
             self.water_timer.start(self.water_interval_ms)
             
-            print(f"设置已更新并保存 - 眼睛休息: {eye_interval}分钟, 喝水提醒: {water_interval}分钟")
+            # 如果包含体态提醒设置，也更新体态定时器
+            if posture_interval is not None:
+                new_posture_interval = posture_interval * 60 * 1000
+                self.posture_timer.stop()
+                self.posture_interval_ms = new_posture_interval
+                self.posture_timer.start(self.posture_interval_ms)
+                print(f"设置已更新并保存 - 眼睛休息: {eye_interval}分钟, 喝水提醒: {water_interval}分钟, 体态提醒: {posture_interval}分钟")
+            else:
+                print(f"设置已更新并保存 - 眼睛休息: {eye_interval}分钟, 喝水提醒: {water_interval}分钟")
             
             # 显示更新消息
-            self.tray_icon.showMessage(
-                "设置已更新",
-                f"眼睛休息: {eye_interval}分钟\n喝水提醒: {water_interval}分钟",
-                QSystemTrayIcon.Information,
-                2000
-            )
+            if posture_interval is not None:
+                self.tray_icon.showMessage(
+                    "设置已更新",
+                    f"眼睛休息: {eye_interval}分钟\n喝水提醒: {water_interval}分钟\n体态提醒: {posture_interval}分钟",
+                    QSystemTrayIcon.Information,
+                    2000
+                )
+            else:
+                self.tray_icon.showMessage(
+                    "设置已更新",
+                    f"眼睛休息: {eye_interval}分钟\n喝水提醒: {water_interval}分钟",
+                    QSystemTrayIcon.Information,
+                    2000
+                )
             
         except Exception as e:
             print(f"更新设置时出错: {e}")

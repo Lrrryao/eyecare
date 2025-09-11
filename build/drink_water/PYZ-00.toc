@@ -1,4 +1,4 @@
-('D:\\Eyecare\\build\\drink_water\\PYZ-00.pyz',
+('D:\\Eyecare\\eyecare\\build\\drink_water\\PYZ-00.pyz',
  [('PyQt5', 'D:\\Anaconda\\Lib\\site-packages\\PyQt5\\__init__.py', 'PYMODULE'),
   ('_compat_pickle', 'D:\\Anaconda\\Lib\\_compat_pickle.py', 'PYMODULE'),
   ('_compression', 'D:\\Anaconda\\Lib\\_compression.py', 'PYMODULE'),
